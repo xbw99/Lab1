@@ -1,6 +1,6 @@
 all:
-  gcc canny.c -o canny
+	gcc canny.c -o final
 test:
-  ./canny
+	./final
 clean:
-  rm -rf *o canny
+	rm -rf *o final
