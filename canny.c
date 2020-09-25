@@ -86,8 +86,10 @@ void apply_hysteresis(short int *mag, unsigned char *nms, int rows, int cols,
 void radian_direction(short int *delta_x, short int *delta_y, int rows,
 	int cols, float **dir_radians, int xdirtag, int ydirtag);
 double angle_radians(double x, double y);
+int non_max_supp(short int *magnitude, short int *delta_x, short int *delta_y, int rows,
+		int cols, unsigned char* nms);
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	char *infilename = NULL;  /* Name of the input image */
 	char *dirfilename = NULL; /* Name of the output gradient direction image */
@@ -163,6 +165,7 @@ main(int argc, char *argv[])
 		fprintf(stderr, "Error writing the edge image, %s.\n", outfilename);
 		exit(1);
 	}
+	return 0;
 }
 
 /*******************************************************************************
@@ -180,7 +183,7 @@ void canny(unsigned char *image, int rows, int cols, float sigma,
 		*delta_x,        /* The first devivative image, x-direction. */
 		*delta_y,        /* The first derivative image, y-direction. */
 		*magnitude;      /* The magnitude of the gadient image.      */
-	int r, c, pos;
+        
 	float *dir_radians = NULL;   /* Gradient direction image.                */
 
 								 /****************************************************************************
@@ -649,13 +652,12 @@ int write_pgm_image(char *outfilename, unsigned char *image, int rows,
 * NAME: Mike Heath
 * DATE: 2/15/96
 *******************************************************************************/
-follow_edges(unsigned char *edgemapptr, short *edgemagptr, short lowval,
+int follow_edges(unsigned char *edgemapptr, short *edgemagptr, short lowval,
 	int cols)
 {
 	short *tempmagptr;
 	unsigned char *tempmapptr;
 	int i;
-	float thethresh;
 	int x[8] = { 1,1,0,-1,-1,-1,0,1 },
 		y[8] = { 0,1,1,1,0,-1,-1,-1 };
 
@@ -668,6 +670,7 @@ follow_edges(unsigned char *edgemapptr, short *edgemagptr, short lowval,
 			follow_edges(tempmapptr, tempmagptr, lowval, cols);
 		}
 	}
+	return 0;
 }
 
 /*******************************************************************************
@@ -681,9 +684,9 @@ follow_edges(unsigned char *edgemapptr, short *edgemagptr, short lowval,
 void apply_hysteresis(short int *mag, unsigned char *nms, int rows, int cols,
 	float tlow, float thigh, unsigned char *edge)
 {
-	int r, c, pos, numedges, lowcount, highcount, lowthreshold, highthreshold,
-		i, hist[32768], rr, cc;
-	short int maximum_mag, sumpix;
+	int r, c, pos, numedges,  highcount, lowthreshold, highthreshold,
+		 hist[32768];
+	short int maximum_mag;
 
 	/****************************************************************************
 	* Initialize the edge map to possible edges everywhere the non-maximal
@@ -784,7 +787,7 @@ void apply_hysteresis(short int *mag, unsigned char *nms, int rows, int cols,
 * NAME: Mike Heath
 * DATE: 2/15/96
 *******************************************************************************/
-non_max_supp(short *mag, short *gradx, short *grady, int nrows, int ncols,
+int non_max_supp(short *mag, short *gradx, short *grady, int nrows, int ncols,
 	unsigned char *result)
 {
 	int rowcount, colcount, count;
@@ -981,4 +984,5 @@ non_max_supp(short *mag, short *gradx, short *grady, int nrows, int ncols,
 			}
 		}
 	}
+	return 0;
 }
